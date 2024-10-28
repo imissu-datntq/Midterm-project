@@ -17,7 +17,7 @@ income_data = Database(db='finance.db', table_name='income_record')
 # Biến toàn cục
 count_ex = 0
 selected_rowid_ex = 0
-count_in = 0 
+count_in = 0
 selected_rowid_in = 0
 
 
@@ -42,7 +42,7 @@ def saveRecord_ex():
         date_ex=transaction_date_ex.get()
     )
     # Hiển thị trên Treeview mà không gọi refresh ngay lập tức
-    tv.insert(parent='', index='0', iid=count_ex, values=(
+    tv.insert(parent='', index = END, iid=count_ex, values=(
         count_ex + 1,
         category_var_ex.get(),
         item_name_ex.get(),   
@@ -67,11 +67,11 @@ def clearEntries_ex():
 # Lấy các bản ghi từ database
 def fetch_records_ex():
     global count_ex
-    count_ex = 0
+    count_ex = len(expense_data.fetch_ex())
     records = expense_data.fetch_ex()
     for rec in records:
         if len(rec) == 5:
-            tv.insert(parent='', index='0', iid=count_ex, values=(rec[0], rec[1], rec[2], rec[3], rec[4]))
+            tv.insert(parent='', index= END, iid=count_ex, values=(rec[0], rec[1], rec[2], rec[3], rec[4]))
             count_ex += 1
 
 # Chọn bản ghi để cập nhật
@@ -112,7 +112,7 @@ def update_record_ex():
             dopvarex.get()
         ))
     except Exception as ep:
-        messagebox.showerror('Error', ep)
+        messagebox.showerror(f'Error: {ep}')
 
     clearEntries_ex()
 
@@ -177,7 +177,7 @@ def saveRecord_in():
     )
     
     # Hiển thị trên Treeview mà không gọi refresh ngay lập tức
-    zv.insert(parent='', index='0', iid=count_in, values=(
+    zv.insert(parent='', index = END, iid=count_in, values=(
         count_in + 1,
         category_var_in.get(),
         item_name_in.get(),
@@ -202,11 +202,11 @@ def clearEntries_in():
 # Lấy các bản ghi từ database
 def fetch_records_in():
     global count_in
-    count_in = 0
+    count_in = len(income_data.fetch_ex())
     records = income_data.fetch_in()
     for rec in records:
         if len(rec) == 5:
-            zv.insert(parent='', index='0', iid=count_in, values=(rec[0], rec[1], rec[2], rec[3], rec[4]))
+            zv.insert(parent='', index= END, iid=count_in, values=(rec[0], rec[1], rec[2], rec[3], rec[4]))
             count_in += 1
 
 # Chọn bản ghi để cập nhật
@@ -247,7 +247,7 @@ def update_record_in():
             dopvarin.get()
         ))
     except Exception as ep:
-        messagebox.showerror('Error', ep)
+        messagebox.showerror(f'Error: {ep}')
 
     clearEntries_in()
 
@@ -399,7 +399,7 @@ total_spent_ex = Button(
     f1,
     text='Total Spent',
     font=f,
-    command=lambda:expense_data.fetch_records_ex('select sum(ite)')
+    command=lambda:fetch_records_ex()
 )
 
 update_btn_ex = Button(
@@ -473,11 +473,12 @@ def update_total_balance():
     total_expense_records = expense_data.fetch_ex()
     total_income_records = income_data.fetch_in()
 
-    total_expense = sum([float(record[2]) for record in total_expense_records if record[2]])
-    total_income = sum([float(record[2]) for record in total_income_records if record[2]])
+    total_expense = sum([int(record[2]) for record in total_expense_records if record[2]])
+    total_income = sum([int(record[2]) for record in total_income_records if record[2]])
 
     # Cập nhật giá trị balance
     balance = total_income - total_expense
+    print(balance)
     res = "{:,.0f}".format(balance).replace(".",",")
     total_balance_label.config(text=f"{res} đ ")
     #total_balance_label.config(text=f"{balance:.3f} đ ")
@@ -541,7 +542,7 @@ total_spent_in = Button(
     f3,
     text='Total Spent',
     font=f,
-    command=lambda:income_data.fetch_records_in('select sum(ite)')
+    command=lambda:fetch_records_in()
 )
 
 update_btn_in = Button(
@@ -566,7 +567,26 @@ quit_btn_in.grid(row=2, column=2, sticky=EW, padx=(10, 0))
 update_btn_in.grid(row=3, column=2, sticky=EW, padx=(10, 0))
 del_btn_in.grid(row=4, column=2, sticky=EW, padx=(10, 0))
 
-
+for expense in expense_data.fetch_ex():
+    tv.insert(parent='', index = END, iid=count_ex, values=(
+        count_ex + 1,
+        expense[0],
+        expense[1],   
+        expense[2],
+        expense[3]
+    ))
+    count_ex += 1
+    
+for income in income_data.fetch_ex():
+    zv.insert(parent='', index = END, iid=count_in, values=(
+        count_in + 1,
+        income[0],
+        income[1],   
+        income[2],
+        income[3]
+    ))
+    count_in += 1
+    
 # binding treeview
 tv.bind("<ButtonRelease-1>", select_record_ex)
 zv.bind("<ButtonRelease-1>", select_record_in)
@@ -585,8 +605,8 @@ scrollbar2.configure(command=zv.yview)
 scrollbar2.pack(side="left", fill="y")
 zv.config(yscrollcommand=scrollbar2.set)
 
-fetch_records_ex()
-fetch_records_in()
+# fetch_records_ex()
+# fetch_records_in()
 
 # infinite loop
 ws.mainloop()
