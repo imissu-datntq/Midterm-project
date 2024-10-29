@@ -478,7 +478,6 @@ def update_total_balance():
 
     # Cập nhật giá trị balance
     balance = total_income - total_expense
-    print(balance)
     res = "{:,.0f}".format(balance).replace(".",",")
     total_balance_label.config(text=f"{res} đ ")
     #total_balance_label.config(text=f"{balance:.3f} đ ")
@@ -598,11 +597,11 @@ style.map("Treeview")
 #Vertical scrollbar
 scrollbar1 = Scrollbar(f2, orient='vertical')
 scrollbar1.configure(command=tv.yview)
-scrollbar1.pack(side="right", fill="y")
+scrollbar1.pack(side="left", fill="y")
 tv.config(yscrollcommand=scrollbar1.set)
 scrollbar2 = Scrollbar(f2, orient='vertical')
 scrollbar2.configure(command=zv.yview)
-scrollbar2.pack(side="left", fill="y")
+scrollbar2.pack(side="right", fill="y")
 zv.config(yscrollcommand=scrollbar2.set)
 
 # fetch_records_ex()
