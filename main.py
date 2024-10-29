@@ -42,15 +42,20 @@ def saveRecord_ex():
         date_ex=transaction_date_ex.get()
     )
     # Hiển thị trên Treeview mà không gọi refresh ngay lập tức
-    tv.insert(parent='', index = END, iid=count_ex, values=(
-        count_ex + 1,
-        category_var_ex.get(),
-        item_name_ex.get(),   
-        format_amount(int(item_amt_ex.get())),
-        transaction_date_ex.get()
-    ))
-    count_ex += 1
-    clearEntries_ex()
+    if category_var_ex.get() == 'Select Category' or category_var_ex.get() == '':
+        messagebox.showwarning('Warning', 'Please select a category')
+    elif item_name_ex.get() == '':
+        messagebox.showwarning('Warning', 'Please insert an item')
+    else:
+        tv.insert(parent='', index = END, iid=count_ex, values=(
+            count_ex + 1,
+            category_var_ex.get(),
+            item_name_ex.get(),   
+            format_amount(item_amt_ex.get()),
+            transaction_date_ex.get()
+        ))
+        count_ex += 1
+        clearEntries_ex()
 
 # Thiết lập ngày hiện tại
 def setDate_ex():
@@ -177,13 +182,18 @@ def saveRecord_in():
     )
     
     # Hiển thị trên Treeview mà không gọi refresh ngay lập tức
-    zv.insert(parent='', index = END, iid=count_in, values=(
-        count_in + 1,
-        category_var_in.get(),
-        item_name_in.get(),
-        format_amount(int(item_amt_in.get())),
-        transaction_date_in.get()
-    ))
+    if category_var_in.get() == 'Select Category' or category_var_in.get() == '':
+        messagebox.showwarning('Warning', 'Please select a category')
+    elif item_name_in.get() == '':
+        messagebox.showwarning('Warning', 'Please insert an item')
+    else:
+        zv.insert(parent='', index = END, iid=count_in, values=(
+            count_in + 1,
+            category_var_in.get(),
+            item_name_in.get(),
+            format_amount(int(item_amt_in.get())),
+            transaction_date_in.get()
+        ))
     count_in += 1
     clearEntries_in()
 
@@ -285,6 +295,7 @@ def create_treeview(frame, columns, treeview_name):
         tree.column(col, width=100)
     tree.pack(expand=True, fill='both')
     return tree
+
 
 
 ws = Tk()
@@ -571,7 +582,7 @@ for expense in expense_data.fetch_ex():
         count_ex + 1,
         expense[0],
         expense[1],   
-        expense[2],
+        format_amount(expense[2]),
         expense[3]
     ))
     count_ex += 1
@@ -581,7 +592,7 @@ for income in income_data.fetch_ex():
         count_in + 1,
         income[0],
         income[1],   
-        income[2],
+        format_amount(income[2]),
         income[3]
     ))
     count_in += 1
